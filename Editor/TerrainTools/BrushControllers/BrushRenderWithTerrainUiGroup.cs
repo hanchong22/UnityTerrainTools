@@ -106,6 +106,20 @@ namespace UnityEditor.TerrainTools
             return m_HeightmapContext as PaintContextExp;
         }
 
+        public PaintContextExp AcquireCurrentLayerCurvemap(bool writable, Terrain terrain, Rect boundsInTerrainSpace, int extraBorderPixels = 0)
+        {
+            m_WriteToHeightmap = writable;
+            m_HeightmapContext = TerrainExpandTools.BeginPaintCurvemap(terrain, boundsInTerrainSpace, extraBorderPixels);
+
+            if (m_HeightmapContext == null)
+                return null;
+
+            m_HeightmapContext.sourceRenderTexture.name = $"{m_Name}::HeightmapContext::SourceRT";
+            m_HeightmapContext.destinationRenderTexture.name = $"{m_Name}::HeightmapContext::DestRT";
+
+            return m_HeightmapContext as PaintContextExp;
+        }
+
         public PaintContext AcquireTexture(bool writable, Terrain terrain, Rect boundsInTerrainSpace, TerrainLayer layer, int extraBorderPixels = 0)
         {
             m_WriteToTexture = writable;

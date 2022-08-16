@@ -10,12 +10,14 @@
 			#include "UnityCG.cginc"
 			#include "Packages/com.unity.terrain-tools/Shaders/TerrainTools.hlsl"
 
+			#pragma shader_feature_local _ISCOMBINECURVE
 
 			sampler2D _MainTex;
 			float4 _MainTex_TexelSize;      // 1/width, 1/height, width, height
 
 			sampler2D _BrushTex;
 			sampler2D _FilterTex;
+			sampler2D _CurveTex;
 
 			float4 _BrushParams;
 			#define BRUSH_STRENGTH      (_BrushParams[0])
@@ -48,6 +50,8 @@
 			#pragma vertex vert
 			#pragma fragment PaintSplatAlphamap
 
+
+
 			float ApplyBrush(float height, float brushStrength)
 			{
 				float targetHeight = 1.0f;
@@ -76,7 +80,11 @@
 				float splatMap = tex2D(_MainTex, i.pcUV).r;
 				float targetAlpha = BRUSH_TARGETHEIGHT;
 
-				return lerp(splatMap, targetAlpha, brushStrength);
+				#ifdef _ISCOMBINECURVE
+					return UnpackHeightmap(tex2D(_CurveTex, i.pcUV)).r;
+				#else
+					return lerp(splatMap, targetAlpha, brushStrength);
+				#endif
 			}
 
 			ENDCG

@@ -81,6 +81,11 @@ namespace UnityEditor.TerrainTools
             return m_BrushRenderWithTerrain.AcquireCurrentLayerHeightmap(writable, m_TerrainAtCreation, boundsInTerrainSpace, extraBorderPixels);
         }
 
+        public PaintContextExp AcquireCurrentLayerCurvemap(bool writable, Rect boundsInTerrainSpace, int extraBorderPixels = 0)
+        {
+            return m_BrushRenderWithTerrain.AcquireCurrentLayerCurvemap(writable, m_TerrainAtCreation, boundsInTerrainSpace, extraBorderPixels);
+        }
+
         public PaintContext AcquireTexture(bool writable, Rect boundsInTerrainSpace, TerrainLayer layer, int extraBorderPixels = 0)
         {
             return m_BrushRenderWithTerrain.AcquireTexture(writable, m_TerrainAtCreation, boundsInTerrainSpace, layer, extraBorderPixels);

@@ -76,6 +76,8 @@ namespace UnityEditor.TerrainTools
 
         [SerializeField]
         float m_TargetStrength = 1.0f;
+        [SerializeField]
+        bool m_IsCombineCurve = false;
 
         [SerializeField]
         Terrain m_SelectedTerrain = null;
@@ -226,10 +228,16 @@ namespace UnityEditor.TerrainTools
                         {
                             PaintContext heightContext = brushRender.AcquireHeightmap(false, brushRect);
 
+                            PaintContext curveContext = brushRender.AcquireCurrentLayerCurvemap(false, brushRect);
                             // Evaluate the brush mask filter stack
                             Material mat = GetPaintMaterial();
                             var brushMask = RTUtils.GetTempHandle(heightContext.sourceRenderTexture.width, heightContext.sourceRenderTexture.height, 0, FilterUtility.defaultFormat);
                             Utility.GenerateAndSetFilterRT(commonUI, heightContext.sourceRenderTexture, brushMask, mat);
+
+                            if (m_IsCombineCurve)
+                            {
+                                mat.SetTexture("_CurveTex", curveContext.sourceRenderTexture);
+                            }
 
                             // apply brush
                             float targetAlpha = m_TargetStrength;
@@ -237,6 +245,14 @@ namespace UnityEditor.TerrainTools
                             Vector4 brushParams = new Vector4(s, targetAlpha, 0.0f, 0.0f);
                             mat.SetTexture("_BrushTex", editContext.brushTexture);
                             mat.SetVector("_BrushParams", brushParams);
+                            if (m_IsCombineCurve)
+                            {
+                                mat.EnableKeyword("_ISCOMBINECURVE");
+                            }
+                            else
+                            {
+                                mat.DisableKeyword("_ISCOMBINECURVE");
+                            }
 
                             brushRender.SetupTerrainToolMaterialProperties(paintContext, brushTransform, mat);
                             brushRender.RenderBrush(paintContext, mat, 0);
@@ -319,6 +335,7 @@ namespace UnityEditor.TerrainTools
 
             m_TargetStrength = EditorGUILayout.Slider(Styles.targetStrengthTxt, m_TargetStrength, 0.0f, 1.0f);
 
+            m_IsCombineCurve = EditorGUILayout.Toggle(Styles.IsCombineCurveTxt,m_IsCombineCurve );
             if (m_TemplateMaterialEditor == null) m_TemplateMaterialEditor = Editor.CreateEditor(terrain.materialTemplate); // fix - 1306604
             
 #if UNITY_2019_2_OR_NEWER
@@ -380,6 +397,7 @@ namespace UnityEditor.TerrainTools
             public static readonly GUIContent RevertPaletteBtn = EditorGUIUtility.TrTextContent("Revert", "Load selected palette and apply to the layer list.");
             public static readonly GUIContent RemoveLayersBtn = EditorGUIUtility.TrTextContent("Remove Selected Layers", "Removes layers that are selected within the Layer Palette.");
             public static readonly GUIContent targetStrengthTxt = EditorGUIUtility.TrTextContent("Target Strength", "Maximum opacity this brush will paint to.");
+            public static readonly GUIContent IsCombineCurveTxt = EditorGUIUtility.TrTextContent("Combined curvature diagram", "");
             public static readonly string LayersWarning = "The selected terrain doesn't contain any layers. Add or create layer(s) to paint on the terrain.";
         }
 

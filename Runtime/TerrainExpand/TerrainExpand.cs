@@ -635,7 +635,7 @@ public class TerrainExpand : MonoBehaviour
                 float height = compressedHeight * normalize;
                 int destY = flipVertically ? heightmapRes - 1 - y : y;
 
-                tex.SetPixel(destY, x, new Color(height, 0, 0, 0));
+                tex.SetPixel(x, destY, new Color(height, 0, 0, 0));
             }
         }
 

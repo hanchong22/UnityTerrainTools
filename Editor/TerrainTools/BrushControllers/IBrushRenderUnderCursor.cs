@@ -28,6 +28,7 @@ namespace UnityEditor.TerrainTools
 
         PaintContextExp AcquireCurrentLayerHeightmap(bool writable, Rect boundsInTerrainSpace, int extraBorderPixels = 0);
 
+        PaintContextExp AcquireCurrentLayerCurvemap(bool writable, Rect boundsInTerrainSpace, int extraBorderPixels = 0);
         /// <summary>
         /// Gets the PaintContext for the texture-map at the bounds specified,
         /// you need to say whether this is to be writable upon acquisition.

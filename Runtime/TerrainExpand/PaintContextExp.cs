@@ -39,6 +39,24 @@ namespace UnityEngine.Experimental.TerrainAPI
                 });
         }
 
+        public void GatherInitCurvemap()
+        {
+            var blitMaterial = UnityEngine.TerrainTools.TerrainPaintUtility.GetHeightBlitMaterial();
+            blitMaterial.SetFloat("_Height_Offset", 0.0f);
+            blitMaterial.SetFloat("_Height_Scale", 1.0f);
+
+            GatherInternalExp(
+                t => TerrainExpandTools.GetCurveMapByIdx(t), //t.terrainData.heightmapTexture, //
+                new Color(0.0f, 0.0f, 0.0f, 0.0f),
+                "PaintContext.GatherHeightmap",
+                blitMaterial: blitMaterial,
+                beforeBlit: t =>
+                {
+                    blitMaterial.SetFloat("_Height_Offset", (t.GetPosition().y - heightWorldSpaceMin) / heightWorldSpaceSize * kNormalizedHeightScale);
+                    blitMaterial.SetFloat("_Height_Scale", t.terrainData.size.y / heightWorldSpaceSize);
+                });
+        }
+
         public void GatherLeftHeightmap(List<int> layerIds)
         {
             var blitMaterial = UnityEngine.TerrainTools.TerrainPaintUtility.GetHeightBlitMaterial();

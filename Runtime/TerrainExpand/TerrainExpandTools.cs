@@ -50,6 +50,14 @@ public static class TerrainExpandTools
         return ctx;
     }
 
+    public static PaintContextExp BeginPaintCurvemap(Terrain terrain, Rect boundsInTerrainSpace, int extraBorderPixels = 0)
+    {
+        int heightmapResolution = terrain.terrainData.heightmapResolution;
+        PaintContextExp ctx = InitializePaintContext(terrain, heightmapResolution, heightmapResolution, RenderTextureFormat.RHalf, boundsInTerrainSpace, extraBorderPixels);
+        ctx.GatherInitCurvemap();
+        return ctx;
+    }
+
     internal static PaintContextExp InitializePaintContext(Terrain terrain, int targetWidth, int targetHeight, RenderTextureFormat pcFormat, Rect boundsInTerrainSpace, int extraBorderPixels = 0, bool texelPadding = true)
     {
         PaintContextExp ctx = PaintContextExp.CreateExpFromBounds(terrain, boundsInTerrainSpace, targetWidth, targetHeight, extraBorderPixels, texelPadding);
@@ -108,6 +116,12 @@ public static class TerrainExpandTools
     }
 
     public static Texture GetHeightMapByIdx(Terrain t, int idx = -3)
+    {
+        TerrainExpand terrainExp = t.gameObject.AddMissingComponent<TerrainExpand>();
+        return terrainExp.GetCurrentHeightMap(idx < -2 || idx >= TerrainExpandConfig.Instance.HeightMapCount ? TerrainExpandConfig.Instance.CurrentHeightLayer : idx);
+    }
+
+    public static Texture GetCurveMapByIdx(Terrain t, int idx = -2)
     {
         TerrainExpand terrainExp = t.gameObject.AddMissingComponent<TerrainExpand>();
         return terrainExp.GetCurrentHeightMap(idx < -2 || idx >= TerrainExpandConfig.Instance.HeightMapCount ? TerrainExpandConfig.Instance.CurrentHeightLayer : idx);
